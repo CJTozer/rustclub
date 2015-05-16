@@ -1,0 +1,5 @@
+[package]
+
+name = "euler11"
+version = "0.0.1"
+authors = [ "Chris Tozer <christopherjtozer@gmail.com>" ]
