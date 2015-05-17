@@ -23,8 +23,20 @@ struct Grid {
 }
 
 impl Grid {
-    fn new(file: String) -> Grid {
-        Grid { cells: Vec::new() }
+    fn new() -> Grid {
+        Grid { 
+            cells: Vec::new()
+        }
+    }
+
+    fn from_file(data_file: String) -> Grid {
+        let mut g = Grid::new();
+        let mut file = File::open(data_file).unwrap();
+        let mut data = String::new();
+        file.read_to_string(&mut data).unwrap();
+        println!("We read data: {}", data);
+        // ## Need to put the data into the cells...
+        g
     }
 
     fn solve(&self) {
