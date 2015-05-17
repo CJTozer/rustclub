@@ -14,12 +14,14 @@ struct Grid {
 }
 
 impl Grid {
+    /// Simple initializer - empty grid
     fn new() -> Grid {
         Grid { 
             cells: Vec::new()
         }
     }
 
+    /// Create new grid from file
     fn from_file(path: &Path) -> Grid {
         let mut g = Grid::new();
         let file = File::open(path).unwrap();
@@ -32,15 +34,46 @@ impl Grid {
             }
             g.cells.push(row);
         }
-        //let mut file = File::open(path).unwrap();
-        //let mut data = String::new();
-        //file.read_to_string(&mut data).unwrap();
-        // println!("We read data: {}", data);
-        // ## Need to put the data into the cells...
         g
     }
 
-    fn solve(&self) {
+    /// Solve [the problem](https://projecteuler.net/problem=11), by finding
+    /// the largest product of 4 consecutive numbers in a row, column or
+    /// diagonal
+    fn solve(&self) -> u32 {
+        // TODO
+        &self._max();
         println!("Grid.solve not implemented yet");
+        123
+    }
+
+    /// Get the maximum value in the grid
+    fn _max(&self) -> u32 {
+        let mut max: u32 = 0;
+        for row in &self.cells {
+            for cell in row {
+                if *cell > max {
+                    println!("{} ", cell);
+                    max = *cell;
+                }
+            }
+        }
+        max
+    }
+
+    /// Get the cell-by-cell product of this Grid and another (smaller) one
+    fn _product(&self, g: Grid) -> Grid {
+        let product = Grid::new();
+        // TODO
+        println!("Grid.solve not implemented yet");
+        product
+    }
+
+    /// 'Translate' a grid
+    fn _translate(&self, x: u32, y: u32) -> Grid {
+        let translated = Grid::new();
+        println!("Grid.solve not implemented yet");
+        // TODO
+        translated
     }
 }
