@@ -41,7 +41,6 @@ impl Grid {
     /// diagonal
     fn solve(&self) -> u32 {
         // TODO
-        &self._max();
         println!("Grid.solve not implemented yet");
         123
     }
@@ -57,14 +56,6 @@ impl Grid {
             }
         }
         max
-    }
-
-    /// Get the cell-by-cell product of this Grid and another (smaller) one
-    fn _product(&self, g: Grid) -> Grid {
-        let product = Grid::new();
-        // TODO
-        println!("Grid.product not implemented yet");
-        product
     }
 
     /// 'Translate' a grid
@@ -94,3 +85,26 @@ impl Grid {
         translated
     }
 }
+
+/// Get the cell-by-cell product of 4 Grid structures
+///
+/// Returns a Grid with the smallest dimensions of the input set
+fn product(g1: Grid, g2: Grid, g3: Grid, g4: Grid) -> Grid {
+    let mut product = Grid::new();
+    for (((r1, r2), r3), r4) in g1.cells.iter()
+                                        .zip(g2.cells.iter())
+                                        .zip(g3.cells.iter())
+                                        .zip(g4.cells.iter()) {
+        // Start a new row
+        let mut new_row = Vec::new();
+        for (((c1, c2), c3), c4) in r1.iter()
+                                          .zip(r2.iter())
+                                          .zip(r3.iter())
+                                          .zip(r4.iter()) {
+            new_row.push(c1 * c2 * c3 * c4);
+        }
+        product.cells.push(new_row);
+    }
+    product
+}
+
