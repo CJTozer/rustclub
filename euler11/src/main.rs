@@ -16,7 +16,7 @@ struct Grid {
 impl Grid {
     /// Simple initializer - empty grid
     fn new() -> Grid {
-        Grid { 
+        Grid {
             cells: Vec::new()
         }
     }
@@ -29,7 +29,6 @@ impl Grid {
         for line in buf.lines() {
             let mut row = Vec::new();
             for cell in line.unwrap().split(" ") {
-                println!("Cell: {}", cell);
                 row.push(cell.parse::<u32>().unwrap());
             }
             g.cells.push(row);
@@ -53,7 +52,6 @@ impl Grid {
         for row in &self.cells {
             for cell in row {
                 if *cell > max {
-                    println!("{} ", cell);
                     max = *cell;
                 }
             }
@@ -65,15 +63,34 @@ impl Grid {
     fn _product(&self, g: Grid) -> Grid {
         let product = Grid::new();
         // TODO
-        println!("Grid.solve not implemented yet");
+        println!("Grid.product not implemented yet");
         product
     }
 
     /// 'Translate' a grid
     fn _translate(&self, x: u32, y: u32) -> Grid {
-        let translated = Grid::new();
-        println!("Grid.solve not implemented yet");
-        // TODO
+        let mut translated = Grid::new();
+        let mut drop_x = x;
+        for row in &self.cells {
+            if drop_x > 0 {
+                // Drop this row
+                drop_x -= 1;
+            } else {
+                // Keep this row
+                let mut drop_y = y;
+                let mut new_row = Vec::new();
+                for cell in row {
+                    if drop_y > 0 {
+                        // Drop this cell
+                        drop_y -= 1;
+                    } else {
+                        // Keep this cell
+                        new_row.push(*cell);
+                    }
+                }
+                translated.cells.push(new_row);
+            }
+        }
         translated
     }
 }
