@@ -9,8 +9,9 @@ fn main() {
     grid.solve();
 }
 
-struct Grid {
-    cells: Vec<Vec<u32>>,
+pub struct Grid {
+    // TODO - Probably shouldn't be public - move tests that use it.
+    pub cells: Vec<Vec<u32>>,
 }
 
 impl Grid {
@@ -22,7 +23,7 @@ impl Grid {
     }
 
     /// Create new grid from file
-    fn from_file(path: &Path) -> Grid {
+    pub fn from_file(path: &Path) -> Grid {
         let mut g = Grid::new();
         let file = File::open(path).unwrap();
         let buf = BufReader::new(file);
@@ -39,14 +40,14 @@ impl Grid {
     /// Solve [the problem](https://projecteuler.net/problem=11), by finding
     /// the largest product of 4 consecutive numbers in a row, column or
     /// diagonal
-    fn solve(&self) -> u32 {
+    pub fn solve(&self) -> u32 {
         // TODO
         println!("Grid.solve not implemented yet");
         123
     }
 
     /// Get the maximum value in the grid
-    fn _max(&self) -> u32 {
+    fn max(&self) -> u32 {
         let mut max: u32 = 0;
         for row in &self.cells {
             for cell in row {
@@ -59,7 +60,8 @@ impl Grid {
     }
 
     /// 'Translate' a grid
-    fn _translate(&self, x: u32, y: u32) -> Grid {
+    // TODO - Probably shouldn't be public - move tests that use it in here?
+    pub fn translate(&self, x: u32, y: u32) -> Grid {
         let mut translated = Grid::new();
         let mut drop_x = x;
         for row in &self.cells {
@@ -108,50 +110,3 @@ fn product(g1: Grid, g2: Grid, g3: Grid, g4: Grid) -> Grid {
     product
 }
 
-fn grid_string(g: Grid) -> String {
-    let mut s = String::new();
-    for row in g.cells {
-        for cell in row {
-            s = s + &format!(" {}", cell);
-        }
-        s.push_str("\n");
-    }
-    s
-}
-
-#[test]
-#[should_panic]
-fn strings_differ() {
-    // Check that the two test grids don't start off the same
-    let in_path = Path::new("data/test1");
-    let exp_path = Path::new("data/test1_a");
-    let g1 = Grid::from_file(in_path);
-    let g2 = Grid::from_file(exp_path);
-
-    assert_eq!(grid_string(g1),
-               grid_string(g2));
-}
-
-#[test]
-fn x_translate() {
-    // Translate the grid by (1, 0)
-    let in_path = Path::new("data/test1");
-    let exp_path = Path::new("data/test1_10");
-    let g1 = Grid::from_file(in_path)._translate(1, 0);
-    let g2 = Grid::from_file(exp_path);
-
-    assert_eq!(grid_string(g1),
-               grid_string(g2));
-}
-
-#[test]
-fn y_translate() {
-    // Translate the grid by (0, 1)
-    let in_path = Path::new("data/test1");
-    let exp_path = Path::new("data/test1_01");
-    let g1 = Grid::from_file(in_path)._translate(0, 1);
-    let g2 = Grid::from_file(exp_path);
-
-    assert_eq!(grid_string(g1),
-               grid_string(g2));
-}
