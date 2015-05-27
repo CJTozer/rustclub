@@ -4,8 +4,7 @@ use std::io::BufRead;
 use std::path::Path;
 
 pub struct Grid {
-    // TODO - Probably shouldn't be public - move tests that use it.
-    pub cells: Vec<Vec<u32>>,
+    cells: Vec<Vec<u32>>,
 }
 
 impl Grid {
@@ -79,6 +78,19 @@ impl Grid {
             }
         }
         translated
+    }
+
+    /// Script helper to give an easy comparison of Grids in UTs
+    #[cfg(test)]
+    pub fn as_string(&self) -> String {
+        let mut s = String::new();
+        for row in &self.cells {
+            for cell in row {
+                s = s + &format!(" {}", cell);
+            }
+            s.push_str("\n");
+        }
+        s
     }
 }
 

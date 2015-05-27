@@ -12,8 +12,8 @@ fn strings_differ() {
     let g1 = Grid::from_file(in_path);
     let g2 = Grid::from_file(exp_path);
 
-    assert_eq!(grid_string(g1),
-               grid_string(g2));
+    assert_eq!(g1.as_string(),
+               g2.as_string());
 }
 
 #[test]
@@ -24,8 +24,8 @@ fn x_translate() {
     let g1 = Grid::from_file(in_path).translate(1, 0);
     let g2 = Grid::from_file(exp_path);
 
-    assert_eq!(grid_string(g1),
-               grid_string(g2));
+    assert_eq!(g1.as_string(),
+               g2.as_string());
 }
 
 #[test]
@@ -36,19 +36,7 @@ fn y_translate() {
     let g1 = Grid::from_file(in_path).translate(0, 1);
     let g2 = Grid::from_file(exp_path);
 
-    assert_eq!(grid_string(g1),
-               grid_string(g2));
-}
-
-/// Script helper to give an easy comparison of Grids
-fn grid_string(g: Grid) -> String {
-    let mut s = String::new();
-    for row in g.cells {
-        for cell in row {
-            s = s + &format!(" {}", cell);
-        }
-        s.push_str("\n");
-    }
-    s
+    assert_eq!(g1.as_string(),
+               g2.as_string());
 }
 
