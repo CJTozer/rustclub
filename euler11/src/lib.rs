@@ -3,12 +3,6 @@ use std::io::BufReader;
 use std::io::BufRead;
 use std::path::Path;
 
-fn main() {
-    let data_path = Path::new("data/grid");
-    let grid: Grid = Grid::from_file(data_path);
-    grid.solve();
-}
-
 pub struct Grid {
     // TODO - Probably shouldn't be public - move tests that use it.
     pub cells: Vec<Vec<u32>>,
