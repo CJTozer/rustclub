@@ -53,8 +53,7 @@ impl Grid {
     }
 
     /// 'Translate' a grid
-    // TODO - Probably shouldn't be public - move tests that use it in here?
-    pub fn translate(&self, x: u32, y: u32) -> Grid {
+    fn translate(&self, x: u32, y: u32) -> Grid {
         let mut translated = Grid::new();
         let mut drop_x = x;
         for row in &self.cells {
@@ -81,7 +80,6 @@ impl Grid {
     }
 
     /// Script helper to give an easy comparison of Grids in UTs
-    #[cfg(test)]
     pub fn as_string(&self) -> String {
         let mut s = String::new();
         for row in &self.cells {
@@ -114,5 +112,41 @@ fn product(g1: Grid, g2: Grid, g3: Grid, g4: Grid) -> Grid {
         product.cells.push(new_row);
     }
     product
+}
+
+#[test]
+fn x_translate() {
+    // Translate the grid by (1, 0)
+    let in_path = Path::new("data/test1");
+    let exp_path = Path::new("data/test1_10");
+    let g1 = Grid::from_file(in_path).translate(1, 0);
+    let g2 = Grid::from_file(exp_path);
+
+    assert_eq!(g1.as_string(),
+               g2.as_string());
+}
+
+#[test]
+fn y_translate() {
+    // Translate the grid by (0, 1)
+    let in_path = Path::new("data/test1");
+    let exp_path = Path::new("data/test1_01");
+    let g1 = Grid::from_file(in_path).translate(0, 1);
+    let g2 = Grid::from_file(exp_path);
+
+    assert_eq!(g1.as_string(),
+               g2.as_string());
+}
+
+#[test]
+fn xy_translate() {
+    // Translate the grid by (2, 3)
+    let in_path = Path::new("data/test1");
+    let exp_path = Path::new("data/test1_23");
+    let g1 = Grid::from_file(in_path).translate(2, 3);
+    let g2 = Grid::from_file(exp_path);
+
+    assert_eq!(g1.as_string(),
+               g2.as_string());
 }
 
