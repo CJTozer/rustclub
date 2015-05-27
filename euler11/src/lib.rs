@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::BufRead;
 use std::path::Path;
+use std::cmp;
 
 pub struct Grid {
     cells: Vec<Vec<u32>>,
@@ -34,9 +35,32 @@ impl Grid {
     /// the largest product of 4 consecutive numbers in a row, column or
     /// diagonal
     pub fn solve(&self) -> u32 {
-        // TODO
-        println!("Grid.solve not implemented yet");
-        123
+        // Check East
+        let max_e = product(&self,
+                            &self.translate(1, 0),
+                            &self.translate(2, 0),
+                            &self.translate(3, 0)).max();
+
+        // Check South
+        let max_s = product(&self,
+                            &self.translate(0, 1),
+                            &self.translate(0, 2),
+                            &self.translate(0, 3)).max();
+
+        // Check South-East
+        let max_se = product(&self,
+                             &self.translate(1, 1),
+                             &self.translate(2, 2),
+                             &self.translate(3, 3)).max();
+
+        // Check North-East
+        let max_ne = product(&self.translate(0, 3),
+                             &self.translate(1, 2),
+                             &self.translate(2, 1),
+                             &self.translate(3, 0)).max();
+
+        cmp::max(cmp::max(max_e, max_s),
+                 cmp::max(max_se, max_ne))
     }
 
     /// Get the maximum value in the grid
@@ -55,19 +79,19 @@ impl Grid {
     /// 'Translate' a grid
     fn translate(&self, x: u32, y: u32) -> Grid {
         let mut translated = Grid::new();
-        let mut drop_x = x;
+        let mut drop_y = y;
         for row in &self.cells {
-            if drop_x > 0 {
+            if drop_y > 0 {
                 // Drop this row
-                drop_x -= 1;
+                drop_y -= 1;
             } else {
                 // Keep this row
-                let mut drop_y = y;
+                let mut drop_x = x;
                 let mut new_row = Vec::new();
                 for cell in row {
-                    if drop_y > 0 {
+                    if drop_x > 0 {
                         // Drop this cell
-                        drop_y -= 1;
+                        drop_x -= 1;
                     } else {
                         // Keep this cell
                         new_row.push(*cell);
@@ -95,7 +119,7 @@ impl Grid {
 /// Get the cell-by-cell product of 4 Grid structures
 ///
 /// Returns a Grid with the smallest dimensions of the input set
-fn product(g1: Grid, g2: Grid, g3: Grid, g4: Grid) -> Grid {
+fn product(g1: &Grid, g2: &Grid, g3: &Grid, g4: &Grid) -> Grid {
     let mut product = Grid::new();
     for (((r1, r2), r3), r4) in g1.cells.iter()
                                         .zip(g2.cells.iter())

@@ -8,5 +8,5 @@ fn solve_the_problem() {
     let path = Path::new("data/grid");
     let g = Grid::from_file(path);
 
-    assert_eq!(12345, g.solve());
+    assert_eq!(70600674, g.solve());
 }

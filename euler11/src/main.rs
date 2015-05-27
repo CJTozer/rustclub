@@ -7,6 +7,6 @@ use euler11::Grid;
 fn main() {
     let data_path = Path::new("data/grid");
     let grid: Grid = Grid::from_file(data_path);
-    grid.solve();
+    println!("Solution: {}", grid.solve());
 }
 
