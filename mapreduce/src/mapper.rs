@@ -11,8 +11,10 @@ impl Mapper<i32, i32> for Incrementer {
            data_out: Sender<i32>) {
         println!("Starting");
         loop {
-            println!("Data received: {}", 
-                     data_in.recv().unwrap());
+            match data_in.recv() {
+                Ok(x) => println!("Data received: {}", x),
+                Err(_) => break, // Assume channel closed
+            }
         }
     }
 }
