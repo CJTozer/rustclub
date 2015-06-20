@@ -5,16 +5,18 @@ mod mapper;
 use mapper::Mapper;
 
 fn main() {
+    // Channel for getting mapped output
     let (mapper_output_tx, mapper_output_rx) = channel();
 
     for ii in 0..4 {
-        println!("Creating mapper {}", ii);
+        // Channel for passing data to this mapper
         let (mapper_input_tx, mapper_input_rx) = channel();
+        // Each mapper gets a copy of the output TX channel
         let this_mapper_output_tx = mapper_output_tx.clone();
+        println!("Creating mapper {}", ii);
         thread::spawn(move || {
-            // Each mapper gets a copy of the output TX channel
-            mapper::Incrementer::map(mapper_input_rx,
-                                     this_mapper_output_tx);
+            mapper::Summer::map(mapper_input_rx,
+                                this_mapper_output_tx);
         });
 
         for jj in 0..10 {
