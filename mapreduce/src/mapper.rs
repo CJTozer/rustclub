@@ -9,12 +9,14 @@ pub struct Incrementer;
 impl Mapper<i32, i32> for Incrementer {
     fn map(data_in: Receiver<i32>,
            data_out: Sender<i32>) {
-        println!("Starting");
         loop {
             match data_in.recv() {
-                Ok(x) => println!("Data received: {}", x),
+                Ok(x) => data_out.send(x + 1).unwrap(),
                 Err(_) => break, // Assume channel closed
             }
         }
+
+        // Close the output channel
+        drop(data_out);
     }
 }

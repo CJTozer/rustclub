@@ -5,21 +5,37 @@ mod mapper;
 use mapper::Mapper;
 
 fn main() {
-    let (mapper_input_tx, mapper_input_rx) = channel();
     let (mapper_output_tx, mapper_output_rx) = channel();
 
-    thread::spawn(move || {
-        mapper::Incrementer::map(mapper_input_rx, mapper_output_tx);
-    });
+    for ii in 0..4 {
+        println!("Creating mapper {}", ii);
+        let (mapper_input_tx, mapper_input_rx) = channel();
+        let this_mapper_output_tx = mapper_output_tx.clone();
+        thread::spawn(move || {
+            // Each mapper gets a copy of the output TX channel
+            mapper::Incrementer::map(mapper_input_rx,
+                                     this_mapper_output_tx);
+        });
 
-    for ii in 0..10 {
-        println!("Sending {}", ii);
-        mapper_input_tx.send(ii).unwrap();
+        for jj in 0..10 {
+            println!("Sending {}", jj);
+            mapper_input_tx.send(jj).unwrap();
+        }
+
+        // Close the input channel
+        drop(mapper_input_tx);
     }
 
-    // Close the input channel
-    drop(mapper_input_tx);
+    // Drop the copy of the output TX channel that we still own
+    drop(mapper_output_tx);
 
-    thread::sleep_ms(1000);
+    // Receive the output
+    loop {
+        match mapper_output_rx.recv() {
+            Ok(x) => println!("Got result: {}", x),
+            Err(_) => break, // Assume channel closed
+        }
+    }
+
     println!("Done");
 }
