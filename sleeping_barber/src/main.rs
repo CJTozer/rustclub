@@ -12,18 +12,25 @@ fn main() {
     println!("Done!");
 }
 
-fn barber(shop: Arc<Mutex<BarberShop>>) {
+fn barber(shop_arc: Arc<Mutex<BarberShop>>) {
     println!("Barber arrives at work");
     loop {
-       println!("Barber checks queue");
-       let mut queue = shop.lock().unwrap();
-       if (queue.customer_queue.is_empty()) {
-         println!("No customers waiting");
-       }
-
-       println!("Barber going for a nap");
-       thread::sleep_ms(500);
-       println!("Barber wakes up");
+        println!("Barber checks queue");
+        let mut shop = shop_arc.lock().unwrap();
+        match shop.customer_queue.pop() {
+            None => {
+                println!("No customers waiting");
+                println!("Barber going for a nap");
+                thread::sleep_ms(500);
+                println!("Barber wakes up");
+            },
+            Some(cust) => {
+                println!("Cutting customer {}'s hair", cust);
+                thread::sleep_ms(100);
+                println!("Done cutting");
+            }
+        }
+        drop(shop);
     }
 }
 
