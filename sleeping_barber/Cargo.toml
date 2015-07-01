@@ -1,0 +1,4 @@
+[package]
+name = "sleeping_barber"
+version = "0.1.0"
+authors = ["Chris Tozer <christopherjtozer@gmail.com>"]
