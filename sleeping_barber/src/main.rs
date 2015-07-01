@@ -1,5 +1,10 @@
+extern crate rand;
+
 use std::thread;
 use std::sync::{Arc, Mutex};
+use rand::Rng;
+
+const NUM_SEATS: usize = 5;
 
 fn main() {
     println!("Begin!");
@@ -8,7 +13,7 @@ fn main() {
     thread::spawn(move || { barber(queue_copy) } );
     thread::spawn(move || { customers(queue.clone()) } );
 
-    thread::sleep_ms(2000);
+    thread::sleep_ms(10000);
     println!("Done!");
 }
 
@@ -23,12 +28,12 @@ fn barber(queue_arc: Arc<Mutex<Vec<u32>>>) {
             None => {
                 println!("No customers waiting");
                 println!("Barber going for a nap");
-                thread::sleep_ms(500);
+                thread::sleep_ms(1000);
                 println!("Barber wakes up");
             },
             Some(cust) => {
                 println!("Cutting customer {}'s hair", cust);
-                thread::sleep_ms(100);
+                thread::sleep_ms(500);
                 println!("Done cutting");
             }
         }
@@ -37,6 +42,7 @@ fn barber(queue_arc: Arc<Mutex<Vec<u32>>>) {
 
 fn customers(queue_arc: Arc<Mutex<Vec<u32>>>) {
     println!("Customers start heading to the barbers");
+    let mut rng = rand::thread_rng();
     let mut cust_no = 1;
     loop {
         let mut queue = queue_arc.clone();
@@ -44,9 +50,16 @@ fn customers(queue_arc: Arc<Mutex<Vec<u32>>>) {
         thread::spawn(move || {
             println!("Customer {} enters shop", this_cust);
             let mut q = queue.lock().unwrap();
-
+            if (q.len() < NUM_SEATS) {
+                println!("Space for one more waiting");
+                q.push(cust_no);
+            } else {
+                println!("No space remaining");
+            }
+            drop(q);
         });
 
-        thread::sleep_ms(100);
+        thread::sleep_ms(rng.gen::<u32>() % 1000);
+        cust_no += 1;
     }
 }
