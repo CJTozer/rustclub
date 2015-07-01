@@ -19,18 +19,17 @@ fn barber(shop_arc: Arc<Mutex<BarberShop>>) {
     loop {
         println!("Barber checks queue");
         let mut shop = shop_arc.lock().unwrap();
-        match shop.customer_queue.pop() {
+        let cust = shop.customer_queue.pop();
+        drop(shop);
+        match cust {
             None => {
                 println!("No customers waiting");
-                drop(shop);
                 println!("Barber going for a nap");
                 thread::sleep_ms(500);
                 println!("Barber wakes up");
             },
             Some(cust) => {
                 println!("Cutting customer {}'s hair", cust);
-                shop.free_waiting_seats += 1;
-                drop(shop);
                 thread::sleep_ms(100);
                 println!("Done cutting");
             }
