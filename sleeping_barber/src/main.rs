@@ -1,35 +1,36 @@
 extern crate rand;
 
 use std::thread;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, Condvar};
 use rand::Rng;
 
 const NUM_SEATS: usize = 5;
 
 fn main() {
     println!("Begin!");
-    let queue = Arc::new(Mutex::new(Vec::new()));
-    let queue_copy = queue.clone();
-    thread::spawn(move || { barber(queue_copy) } );
-    thread::spawn(move || { customers(queue.clone()) } );
+    let pair = Arc::new((Mutex::new(Vec::new()), Condvar::new()));
+    let pair_copy = pair.clone();
+    thread::spawn(move || { barber(pair_copy) } );
+    thread::spawn(move || { customers(pair.clone()) } );
 
     thread::sleep_ms(10000);
     println!("Done!");
 }
 
-fn barber(queue_arc: Arc<Mutex<Vec<u32>>>) {
+fn barber(pair_arc: Arc<(Mutex<Vec<u32>>, Condvar)>) {
+    let (ref mutex, ref condvar) = *(pair_arc.clone());
     println!("Barber arrives at work");
     loop {
         println!("Barber checks queue");
-        let mut queue = queue_arc.lock().unwrap();
+        let mut queue = mutex.lock().unwrap();
         let cust = queue.pop();
         drop(queue);
         match cust {
             None => {
                 println!("No customers waiting");
                 println!("Barber going for a nap");
-                thread::sleep_ms(1000);
-                println!("Barber wakes up");
+                condvar.wait(mutex.lock().unwrap()).ok();
+                println!("Barber woken up");
             },
             Some(cust) => {
                 println!("Cutting customer {}'s hair", cust);
@@ -40,26 +41,28 @@ fn barber(queue_arc: Arc<Mutex<Vec<u32>>>) {
     }
 }
 
-fn customers(queue_arc: Arc<Mutex<Vec<u32>>>) {
+fn customers(pair_arc: Arc<(Mutex<Vec<u32>>, Condvar)>) {
     println!("Customers start heading to the barbers");
     let mut rng = rand::thread_rng();
     let mut cust_no = 1;
     loop {
-        let queue = queue_arc.clone();
         let this_cust = cust_no;
+        let this_arc = pair_arc.clone();
         thread::spawn(move || {
             println!("Customer {} enters shop", this_cust);
-            let mut q = queue.lock().unwrap();
-            if q.len() < NUM_SEATS {
+            let (ref mutex, ref condvar) = *this_arc;
+            let mut queue = mutex.lock().unwrap();
+            if queue.len() < NUM_SEATS {
                 println!("Space for one more waiting");
-                q.push(cust_no);
+                queue.push(cust_no);
+                condvar.notify_one();
             } else {
                 println!("No space remaining");
             }
-            drop(q);
+            drop(queue);
         });
 
-        thread::sleep_ms(rng.gen::<u32>() % 1000);
+        thread::sleep_ms(rng.gen::<u32>() % 500);
         cust_no += 1;
     }
 }
