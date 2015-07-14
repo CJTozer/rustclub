@@ -8,7 +8,7 @@ const NUM_SEATS: usize = 5;
 
 fn main() {
     println!("Begin!");
-    let mut queue = Arc::new(Mutex::new(Vec::new()));
+    let queue = Arc::new(Mutex::new(Vec::new()));
     let queue_copy = queue.clone();
     thread::spawn(move || { barber(queue_copy) } );
     thread::spawn(move || { customers(queue.clone()) } );
@@ -45,12 +45,12 @@ fn customers(queue_arc: Arc<Mutex<Vec<u32>>>) {
     let mut rng = rand::thread_rng();
     let mut cust_no = 1;
     loop {
-        let mut queue = queue_arc.clone();
+        let queue = queue_arc.clone();
         let this_cust = cust_no;
         thread::spawn(move || {
             println!("Customer {} enters shop", this_cust);
             let mut q = queue.lock().unwrap();
-            if (q.len() < NUM_SEATS) {
+            if q.len() < NUM_SEATS {
                 println!("Space for one more waiting");
                 q.push(cust_no);
             } else {
